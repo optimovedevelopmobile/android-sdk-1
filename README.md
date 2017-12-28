@@ -79,7 +79,7 @@ public class MyApplication extends Application {
 
 The SDK initialization process occurs asynchronously, off the `Main UI Thread`.<br>
 Before calling the Public API methods, make sure that the SDK has finished initialization by calling the `registerStateListener` method with an instance of `OptimoveStateListener`.<br>
->If the object implementing the `OptimoveStateListener` is an instance member of an `Activity` or the `Activity` itself, **_always_** unregister that object at the `onStop()` callback to prevent memory leaks.<br>
+>If the object implementing the `OptimoveStateListener` is a component with a _"Lifecycle"_ (i.e. `Activity` or `Fragment`), **_always_** unregister that object at the `onStop()` callback to prevent memory leaks.<br>
 
 ```java
 public class MainActivity extends AppCompatActivity implements OptimoveStateListener {
@@ -104,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements OptimoveStateList
   }
 
   @Override
-  public void onConfigurationSucceed() {
+  public void onConfigurationSucceed(MissingPermissions... missingPermissions) {
 
+    //If appropriate, ask for permissions here
     //Do any call to the Optimove SDK safely in here
   }
 
@@ -116,6 +117,13 @@ public class MainActivity extends AppCompatActivity implements OptimoveStateList
   }
 }
 ```
+
+### Initialization Errors
+If during initialization the SDK fatal errors it calls the `onConfigurationFailed(OptimoveStateListener.Error... errors)`. Most of the error are **unrecoverable** (e.g. no network, internal error). However, some can and should be handled by the hosting app, at the appropriate manner and time.<br>
+Those cases are described in the **_Special Use Cases_** section.
+
+### Missing Optional Permissions
+Once the SDK has finished initializing successfully, it passes all **non-vital missing permissions** in the `onConfigurationSucceed(MissingPermissions... missingPermissions)`. These permissions can enhance the _user experience_ but are not vital to the SDK's functionality.
 
 ## Analytics
 Using the Optimove's Android SDK, the hosting application can track events with analytical significance.<br>
@@ -209,8 +217,8 @@ To support deep linking, update application's `manifest.xml` file to reflect whi
 </intent-filter>
 ```
 
-To support **_custom deep linking data_** pass a `LinkDataExtractedListener` to an instance of `DynamicLinkHandler` inside the targeted `Activity`.<br>
-The `dynamicLinkHandler` calls either the _**`onDataExtracted(Map<String, String> data)`**_ with the deep linking data in case of successful extraction, or the _**`onErrorOccurred(LinkDataError error)`**_ if any error occurred. 
+To support **_custom deep linking data_** pass a `LinkDataExtractedListener` to an instance of `DeepLinkHandler` inside the targeted `Activity`.<br>
+The `deepLinkHandler` calls either the _**`onDataExtracted(Map<String, String> data)`**_ with the deep linking data in case of successful extraction, or the _**`onErrorOccurred(LinkDataError error)`**_ if any error occurred. 
 
 ```java
 public class MyTargetedActivity extends AppCompatActivity implements LinkDataExtractedListener {
@@ -222,7 +230,7 @@ public class MyTargetedActivity extends AppCompatActivity implements LinkDataExt
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_employee_page);
-    new DynamicLinkHandler(this).extractLinkData(this);
+    new DeepLinkHandler(getIntent()).extractLinkData(this);
   }
 
   @Override
@@ -261,6 +269,64 @@ public class MainActivity extends AppCompatActivity implements OptimoveStateList
 
 ## Special Use Cases
 
+### Recoverable Fatal Errors
+
+#### Missing Google Play Services
+The SDK requires **_Google Play Services_** to operate, thus an outdated or missing **_Google Play Services_** application prompts a `GOOGLE_PLAY_SERVICES_MISSING` initialization error.
+If encountered (very rare), the hosting application needs to decide on the best approach to resolve that matter.
+
+___
+
+### Deep Linking to the Main Activity
+
+If the **_Main Activity_** (i.e. has `<intent-filter>` with `<action android:name="android.intent.action.MAIN"/>` and `<category android:name="android.intent.category.LAUNCHER"/>`) needs to be targeted by a **_deep link_**, add `android:launchMode="singleInstance"` to the activity's declaration. `singleInstance` ensures that if an _Optipush_ notification is open while the _application_ is running (either in the **foreground** or **background**), **_Android_** will not start a new `Task`, nor will it kill the current one, but will call the `onNewIntent(Intent intent)` with the notification's `Intent`.
+
+`manifest.xml`
+```xml
+<activity android:name=".MainActivity"
+  android:launchMode="singleInstance">
+  <intent-filter>
+    <action android:name="android.intent.action.MAIN"/>
+    <category android:name="android.intent.category.LAUNCHER"/>
+  </intent-filter>
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW"/>
+
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+
+    <data
+      android:host="replace.with.the.app.package" 
+      android:pathPrefix="/replace_with_a_custom_screen_name"
+      android:scheme="http"/>
+  </intent-filter>
+</activity>
+```
+
+`MainActivity.java`
+```java
+  public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+      super.onNewIntent(intent);
+      new DeepLinkHandler(intent).extractLinkData(this);
+  }
+
+  @Override
+  public void onDataExtracted(Map<String, String> data) {
+
+    //Do any custom behavior according to the provided data Map
+  }
+
+  @Override
+  public void onErrorOccurred(LinkDataError error) {
+
+    //Handle errors in any way fitted
+  }
+}
+```
+
 ### The Hosting Application Uses Firebase
 
 #### Installation
@@ -271,8 +337,7 @@ Therefor, it is highly recommended to match the application's **_Firebase SDK ve
 
 | Optimove SDK Version | Firebase SDK Version |
 | -------------------- | -------------------- |
-| 1.0.0                | 11.6.0               |
-___
+| 1.0.0                | 11.8.0               |
 
 #### <br> Multiple FirebaseMessagingServices
 When the hosting app also utilizes Firebase Cloud Messaging and implements the **_`FirebaseMessagingService`_** Android's **_Service Priority_** kicks in. Therefor, the app developer **must** call explicitly to the `OptipushMessagingHandler`.
@@ -287,9 +352,8 @@ public class MyMessagingService extends FirebaseMessagingService {
     }
 }
 ```
-___
 
-#### <br> SDK Integration Note
+#### <br> FirebaseApp Initialization Order
 
 Usually when using **_Firebase_** it takes care of its own initialization. However, there are cases in which it is desired to initialize the **_default FirebaseApp_** manually. <br>
 In these special cases, be advised that calling the `Optimove.configure` before the `FirebaseApp.initializeApp` leads to a `RuntimeException` since the **_default FirebaseApp_** must be initialized before any other **_secondary FirebaseApp_**, which in this case would be triggered by the _Optimove Android SDK_.
