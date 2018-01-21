@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/rootView"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/mainTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Optimove Android SDK Demo"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/customEventsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Custom Events Reporting"
+        android:textSize="18sp"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/stringInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/stringInputField"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter a Mandatory String Param"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/numberInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/numberInputField"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter an Optional Number Param"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/submitCustomEvent"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:minHeight="0dp"
+        android:text="submit"/>
+
+    <TextView
+        android:id="@+id/userIdTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="User Conversion"
+        android:textSize="18sp"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/uidInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/uidInputText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter a userId"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/submitSetUserId"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:minHeight="0dp"
+        android:text="submit"/>
+
+    <TextView
+        android:id="@+id/testModeStateOutput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Template Test Mode ON"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/toggleTestMode"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:minHeight="0dp"
+        android:text="Toggle Test Mode"
+        android:textAllCaps="false"/>
+
+</LinearLayout>
