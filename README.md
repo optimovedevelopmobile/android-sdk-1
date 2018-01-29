@@ -12,7 +12,7 @@ A **_Tenant token_** is provided during the initial integration with Optimove. T
 The tenant token contains the following information:
 * `initEndPointUrl` - The URL where the **_tenant configurations_** reside
 * `token` - The actual token, unique per tenant
-* `config name` - The version of the desired configuration
+* `config name` - The name of the desired configuration
 
 ### Installation
 
@@ -68,7 +68,7 @@ public class MyApplication extends Application {
     super.onCreate();
     TenantInfo tenantInfo = new TenantInfo("https://optimove.mobile.demo/sdk-configs/", //The initEndPointUrl
                                               "abcdefg12345678", //The token
-                                              "myapp.android.1.0.0", //The version
+                                              "myapp.android.1.0.0", //The config name
                                               false); //Has Firebase
     Optimove.configure(this, tenantInfo);
   }
@@ -140,14 +140,26 @@ Pass that `CustomerId` to the `Optimove` singleton as soon as the authentication
 Optimove.getInstance().setUserId("a-unique-user-id");
 ```
 ### Report Screen Event
-To target which screens the user has visited in the app, create a new `SetScreenVisitEvent` event with the appropriate `screenName` and pass it to the `Optimove` singleton.
+To target which screens the user has visited in the app, call the `reportScreenVisit` method of the `Optimove` singleton. It can accept either the current `Activity` or, for more finely tuned screen hierarchy reporting, a `String` describing the **_Screen's hierarchy_**.
 ```java
-@Override
-public void onConfigurationSucceed() {
+public class MainActivity extends AppCompatActivity {
+  @Override
+  public void onConfigurationSucceed() {
 
-  Optimove.getInstance().reportEvent(new SetScreenVisitEvent("Employees List"));
+    Optimove.getInstance().reportScreenVisit(this, "Main");
+  }
 }
 ```
+```java
+public class CheckoutFragment extends Fragment {
+  @Override
+  public void onConfigurationSucceed() {
+
+    Optimove.getInstance().reportScreenVisit("Main/Footwear/Boots/ConfirmOrder", "Checkout");
+  }
+}
+```
+
 ### Report Custom Event
 To create a _**`Custom Event`**_ (not provided as a predefined event by Optimove) implement the `OptimoveEvent interface`.<br>
 The interface defines 2 methods:
@@ -337,7 +349,7 @@ Therefor, it is highly recommended to match the application's **_Firebase SDK ve
 
 | Optimove SDK Version | Firebase SDK Version |
 | -------------------- | -------------------- |
-| 1.0.0                | 11.8.0               |
+| 1.0.1                | 11.8.0               |
 
 #### <br> Multiple FirebaseMessagingServices
 When the hosting app also utilizes Firebase Cloud Messaging and implements the **_`FirebaseMessagingService`_** Android's **_Service Priority_** kicks in. Therefor, the app developer **must** call explicitly to the `OptipushMessagingHandler`.
