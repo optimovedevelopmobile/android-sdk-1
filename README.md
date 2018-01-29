@@ -8,6 +8,10 @@ While supporting a constantly rising number of products, the SDK's API is guaran
 
 ### Prerequisites
 
+During integration the application's development team must provide Optimove with:
+* The **_app's package_**
+* The **_SHA256 cert fingerprint_** (can be retrieved using: `keytool -list -v -keystore my-release-key.keystore`)
+
 A **_Tenant token_** is provided during the initial integration with Optimove. That token must be available to the application's developer before installing and integrating the SDK into the app.<br>
 The tenant token contains the following information:
 * `initEndPointUrl` - The URL where the **_tenant configurations_** reside
@@ -349,7 +353,7 @@ Therefor, it is highly recommended to match the application's **_Firebase SDK ve
 
 | Optimove SDK Version | Firebase SDK Version |
 | -------------------- | -------------------- |
-| 1.0.1                | 11.8.0               |
+| 1.0.2                | 11.8.0               |
 
 #### <br> Multiple FirebaseMessagingServices
 When the hosting app also utilizes Firebase Cloud Messaging and implements the **_`FirebaseMessagingService`_** Android's **_Service Priority_** kicks in. Therefor, the app developer **must** call explicitly to the `OptipushMessagingHandler`.

@@ -13,7 +13,7 @@ public class MyApplication extends Application {
 
         //This info is provided by Optimove during integration
         TenantInfo tenantInfo = new TenantInfo(
-                "https://appcontrollerproject-developer.firebaseapp.com/", //The Initialization end point
+                "https://provided.by.optimove/", //The Initialization end point
                 "demo_apps", //The token
                 "1.0.0"); //The configurations name
 //                "exampleapp.android.1.0.0"); //The configurations name
