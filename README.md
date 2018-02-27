@@ -353,7 +353,7 @@ Therefor, it is highly recommended to match the application's **_Firebase SDK ve
 
 | Optimove SDK Version | Firebase SDK Version |
 | -------------------- | -------------------- |
-| 1.0.2                | 11.8.0               |
+| 1.0.4                | 11.8.0               |
 
 #### <br> Multiple FirebaseMessagingServices
 When the hosting app also utilizes Firebase Cloud Messaging and implements the **_`FirebaseMessagingService`_** Android's **_Service Priority_** kicks in. Therefor, the app developer **must** call explicitly to the `OptipushMessagingHandler`.
